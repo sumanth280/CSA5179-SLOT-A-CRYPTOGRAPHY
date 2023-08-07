@@ -1,0 +1,34 @@
+#include <stdio.h>
+#include <string.h>
+#include <openssl/aes.h>
+
+void cbc_mac(unsigned char* key, unsigned char* message, unsigned char* mac) {
+    AES_KEY aes_key;
+    unsigned char iv[AES_BLOCK_SIZE] = {0};
+    int i;
+
+    // Initialize the AES key with the given key
+    AES_set_encrypt_key(key, 128, &aes_key);
+
+    // Encrypt the message using CBC mode
+    AES_cbc_encrypt(message, mac, AES_BLOCK_SIZE, &aes_key, iv, AES_ENCRYPT);
+}
+
+int main() {
+    unsigned char key[AES_BLOCK_SIZE] = "MySecretKey123456";
+    unsigned char message[AES_BLOCK_SIZE] = "HelloWorld!123456";
+
+    // The MAC will be stored here
+    unsigned char mac[AES_BLOCK_SIZE];
+
+    // Calculate the CBC-MAC of the message
+    cbc_mac(key, message, mac);
+
+    printf("CBC-MAC: ");
+    for (int i = 0; i < AES_BLOCK_SIZE; i++) {
+        printf("%02x", mac[i]);
+    }
+    printf("\n");
+
+    return 0;
+}
